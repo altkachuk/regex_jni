@@ -6,7 +6,6 @@ package atproj.com.linesorter.views;
 
 public interface LoadingView {
 
-    void showLoading();
-    void showLoaded();
-    void showError();
+    void onError();
+
 }

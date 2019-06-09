@@ -26,18 +26,15 @@ public class AppFileUtil {
 
     static public boolean addLineInFile(Context context, String name, String line) {
         File file = getFile(context, name);
-        try {
+        try (FileOutputStream output = new FileOutputStream(file);
+             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));) {
             if (!file.exists())
                 file.createNewFile();
-
-            FileOutputStream output = new FileOutputStream(file);
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
 
             writer.write(line);
             writer.newLine();
 
             writer.close();
-            output.close();
         } catch (IOException e) {
             return false;
         }

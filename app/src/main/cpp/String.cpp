@@ -68,7 +68,7 @@ String* String::Split(size_t &dstarrsize, char pred) {
             String *s = new String(str, strlen);
             temparr[arrindex] = *s;
             arrindex++;
-            i = index + 1;
+            i = index;
         }
     }
 

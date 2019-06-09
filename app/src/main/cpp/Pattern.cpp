@@ -102,12 +102,11 @@ bool Pattern::find(const char *src, int srclen, bool &is_any) {
             return findCharacter(src, srclen, is_any);
         case kAnySeqeunce:
             any_pos_ = regex_pos_;
-            src_pos_++;
             if (src_pos_ > srclen)
                 return false;
             regex_pos_++;
             is_any = true;
-            src_any_pos_ = src_pos_;
+            src_any_pos_ = src_pos_+1;
             last_state_ = kAnySeqeunce;
             return true;
         case kOneSymbol:

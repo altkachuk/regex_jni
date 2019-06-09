@@ -9,6 +9,8 @@
 #include <jni.h>
 #include "CLogCallback.h"
 #include "String.h"
+#include "Queue.h"
+#include <thread>
 
 class CLogReader {
 
@@ -34,15 +36,7 @@ public:
      * @param block_size
      * @return
      */
-    bool AddSourceBlock(const char *block, const size_t block_size);
-
-
-    /**
-     *
-     * This method runs searching
-     *
-     */
-    void Start();
+    void AddSourceBlock(const char *block, const size_t block_size);
 
     /**
      *
@@ -50,18 +44,24 @@ public:
      *
      * @return size of matches
      */
-    int TestStart();
+    int NumOfMatches(const char *block, const size_t block_size);
+
+private:
+    void execute();
+
 
 private:
     CLogCallback onprocesscallback_;
     CLogCallback oncompletecallback_;
-
-private:
     Pattern *pattern_;
-    String *blockstr_;
+    Queue<String> *string_queue_;
+    Queue<Pattern> *pattern_queue_;
+    bool executed_;
+    std::thread execute_thread_;
+    std::mutex mutex_;
+    std::condition_variable cond_var_;
 
 };
-
 
 
 #endif //LINESORTER_CLOGREADER_H

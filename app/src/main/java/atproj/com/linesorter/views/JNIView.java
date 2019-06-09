@@ -6,6 +6,8 @@ package atproj.com.linesorter.views;
 
 public interface JNIView {
 
-    void onParsingComplete();
     void onParsingProcess(String line);
+
+    void onParsingComplete();
+
 }

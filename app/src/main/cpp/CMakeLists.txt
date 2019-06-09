@@ -7,7 +7,9 @@ add_library(linesorter
 		JniNativeCallListener.cpp
 		String.cpp
 		Pattern.cpp
-		StringUtil.cpp)
+		StringUtil.cpp
+		Queue.h
+		)
 		
 #include libraries needed for echo lib
 target_link_libraries(linesorter

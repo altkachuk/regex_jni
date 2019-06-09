@@ -1,10 +1,13 @@
 <resources>
     <string name="app_name">LineSorter</string>
-    <string name="type_url">Type the url:</string>
+    <string name="activity_lines">Results</string>
+    <string name="type_data">Please Enter url of text and Regex filter</string>
+    <string name="hint_url">http://domain.com/text.txt</string>
     <string name="type_filter">Type the filter:</string>
-    <string name="filter_example">i.e. *some*som?*\\?\\*\\\\</string>
-    <string name="start">Start</string>
-    <string name="try_again">Try again</string>
+    <string name="hint_filter">*some*som?*\\?\\*\\\\</string>
+    <string name="load_button">Load</string>
+    <string name="try_again_button">Try again</string>
     <string name="loading">Loading...</string>
     <string name="copy">Copy</string>
+    <string name="title_activity_line_search">LineSearchActivity</string>
 </resources>

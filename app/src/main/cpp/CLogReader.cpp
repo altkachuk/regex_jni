@@ -6,15 +6,24 @@
 #include "Pattern.h"
 
 CLogReader::CLogReader() {
-    blockstr_ = nullptr;
     pattern_ = nullptr;
+    string_queue_ = new Queue<String>();
+    pattern_queue_ = new Queue<Pattern>();
+
+    executed_ = true;
+    execute_thread_ = std::thread(&CLogReader::execute, this);
+    execute_thread_.detach();
 }
 
 CLogReader::~CLogReader() {
-    if (blockstr_)
-        delete blockstr_;
+    executed_ = false;
+
     if (pattern_)
         delete pattern_;
+    if (string_queue_)
+        delete string_queue_;
+    if (pattern_queue_)
+        delete pattern_queue_;
 }
 
 void CLogReader::SetOnProcessCallback(CLogCallback callback) {
@@ -35,39 +44,51 @@ bool CLogReader::SetFilter(const char *filter) {
     return true;
 }
 
-bool CLogReader::AddSourceBlock(const char *block, const size_t block_size) {
-    if (blockstr_)
-        delete blockstr_;
-
-    if (block_size == 0)
-        return false;
-
-    blockstr_ = new String(block, block_size);
-
-    return true;
-}
-
-void CLogReader::Start() {
-    size_t arrsize = 0;
-    // split by new string character
-    String *strarr = blockstr_->Split(arrsize, '\n');
-
-    for (size_t i = 0; i < arrsize; i++) {
-        String str = strarr[i];
-
-        if (str.Match(pattern_)) {
-            char *ch = str.GetString();
-            onprocesscallback_(ch);
+void CLogReader::AddSourceBlock(const char *block, const size_t block_size) {
+    if (block_size == 0) {
+        if (!executed_) {
+            oncompletecallback_(nullptr);
         }
+        return;
     }
 
-    oncompletecallback_(nullptr);
+    std::lock_guard<std::mutex> lck(mutex_);
+    string_queue_->Push(new String(block, block_size));
+    pattern_queue_->Push(new Pattern(*pattern_));
 }
 
-int CLogReader::TestStart() {
+void CLogReader::execute() {
+    while (executed_) {
+        while (string_queue_->Size() > 0) {
+            std::lock_guard<std::mutex> lck(mutex_);
+            String *string = string_queue_->Pop();
+            Pattern *pattern = pattern_queue_->Pop();
+            size_t arrsize = 0;
+            // split by new string character
+            String *strarr = string->Split(arrsize, '\n');
+
+            for (size_t i = 0; i < arrsize; i++) {
+                String str = strarr[i];
+
+                if (str.Match(pattern_)) {
+                    char *ch = str.GetString();
+                    onprocesscallback_(ch);
+                }
+            }
+            delete string;
+            delete pattern;
+        }
+    }
+    //executed_ = false;
+    //oncompletecallback_(nullptr);
+}
+
+int CLogReader::NumOfMatches(const char *block, const size_t block_size) {
+    String* string = new String(block, block_size);
+
     size_t arrsize = 0;
     // split by new string character
-    String *strarr = blockstr_->Split(arrsize, '\n');
+    String *strarr = string->Split(arrsize, '\n');
 
     int res = 0;
     for (size_t i = 0; i < arrsize; i++) {

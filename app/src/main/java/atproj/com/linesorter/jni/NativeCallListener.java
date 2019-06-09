@@ -1,4 +1,4 @@
-package atproj.com.linesorter.listener;
+package atproj.com.linesorter.jni;
 
 /**
  * Created by andre on 08-Apr-19.
